@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reelcut – turn long videos into viral shorts</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d0a1f;--panel:#171233;--line:#2e2760;--ink:#f3f1ff;--mute:#a49fd0;--v:#7c5cff;--c:#ff5c7a;--m:#4df0c4;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.6 "DM Sans",system-ui,sans-serif;overflow-x:hidden}
+#bg{position:fixed;inset:0;width:100%;height:100%;z-index:0}
+.glow{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(600px circle at var(--mx,50%) var(--my,30%),rgba(124,92,255,.22),transparent 60%)}
+.wrap{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:0 20px}
+h1,h2,h3{font-family:"Bricolage Grotesque","DM Sans",sans-serif;margin:0;line-height:1.05;letter-spacing:-.02em}
+nav{display:flex;justify-content:space-between;align-items:center;padding:18px 0;font:800 22px "Bricolage Grotesque",sans-serif}
+nav i{display:inline-block;width:24px;height:24px;border-radius:8px;background:linear-gradient(135deg,var(--v),var(--c));vertical-align:-4px;margin-right:8px}
+nav small{font:400 13px "DM Sans";color:var(--mute)}
+.hero{text-align:center;padding:44px 0 30px}
+.hero h1{font-size:clamp(38px,7.5vw,76px);font-weight:800}
+.hero h1 span{background:linear-gradient(90deg,var(--c),var(--v),var(--m),var(--c));background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:s 6s linear infinite}
+@keyframes s{to{background-position:300% 0}}
+.hero p{color:var(--mute);font-size:18px;max-width:560px;margin:18px auto 0}
+.box{background:rgba(23,18,51,.8);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:20px;padding:20px;margin:18px 0}
+.box h3{font-size:20px;margin-bottom:12px}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}.row>*{flex:1 1 150px;min-width:0}
+input,select{background:#0d0a1f;border:1px solid var(--line);border-radius:12px;padding:12px 14px;color:var(--ink);font:inherit;width:100%}
+input:focus,select:focus{outline:none;border-color:var(--v)}
+:focus-visible{outline:2px solid var(--m);outline-offset:2px}
+label{display:block;font-size:13px;color:var(--mute);margin-top:10px}
+.btn{background:linear-gradient(135deg,var(--v),#a05cff);border:0;border-radius:12px;padding:13px 22px;font:700 16px "DM Sans";color:#fff;cursor:pointer;box-shadow:0 8px 28px rgba(124,92,255,.35)}
+.btn:disabled{opacity:.55;cursor:wait}.btn.g{background:transparent;border:1px solid var(--line);box-shadow:none}
+.note{font-size:13px;color:var(--mute);margin:10px 0 0}
+.or{text-align:center;color:var(--mute);font-size:13px;margin:10px 0 0}
+#drop{border:2px dashed var(--line);border-radius:14px;padding:22px;text-align:center;color:var(--mute);cursor:pointer;transition:.15s}
+#drop.on,#drop:hover{border-color:var(--m);color:var(--ink)}
+#log{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:8px;font-size:15px}
+#log li{padding:9px 14px;border:1px solid var(--line);border-radius:10px;color:var(--mute)}
+#log li.run{color:var(--ink);border-color:var(--v)}#log li.ok{color:var(--ink)}#log li.ok::before{content:"✓ ";color:var(--m)}#log li.bad{color:var(--c);border-color:var(--c)}
+#bar{height:6px;background:var(--line);border-radius:6px;overflow:hidden;margin-top:12px;display:none}#bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--v),var(--m));transition:width .2s}
+#clips{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-top:16px}
+.clip{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:10px;animation:p .5s both}
+@keyframes p{from{opacity:0;transform:translateY(16px)}}
+.clip video{width:100%;aspect-ratio:9/16;border-radius:10px;background:#000;object-fit:cover}
+.clip h3{font-size:16px;margin:10px 4px 2px;letter-spacing:0}.clip small{display:block;color:var(--mute);margin:0 4px 8px}
+.clip .row{margin-top:6px}.clip .btn{padding:8px;font-size:14px}
+.err{color:var(--c);font-size:14px;min-height:20px;margin-top:8px}
+footer{padding:30px 0 60px;color:var(--mute);font-size:13px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style></head><body>
+<canvas id="bg" aria-hidden="true"></canvas><div class="glow" aria-hidden="true"></div>
+<div class="wrap">
+<nav><span><i></i>Reelcut</span><small>Runs in your browser. Your files and keys never touch our server.</small></nav>
+<div class="hero"><h1>Long video in. <span>Viral shorts</span> out.</h1><p>Add a video, connect your AI model, and Reelcut finds the best moments and cuts them into 9:16 clips.</p></div>
+
+<div class="box"><h3>1. Connect your AI</h3>
+<div class="row"><div><label for="tp">Transcription</label><select id="tp"><option value="groq">Groq (free tier)</option><option value="openai">OpenAI</option></select></div>
+<div><label for="tk">Transcription API key</label><input id="tk" type="password" placeholder="Paste key" autocomplete="off"></div></div>
+<div class="row"><div><label for="hp">Highlight model</label><select id="hp"><option value="anthropic">Claude (Anthropic)</option><option value="openai">OpenAI</option><option value="gemini">Google Gemini</option><option value="groq">Groq</option><option value="openrouter">OpenRouter</option></select></div>
+<div><label for="hk">Highlight API key</label><input id="hk" type="password" placeholder="Paste key" autocomplete="off"></div>
+<div><label for="hm">Model name</label><input id="hm" placeholder="Model name"></div></div>
+<p class="note">Same provider for both? Use the same key in both fields. Keys are saved only in this browser.</p></div>
+
+<div class="box"><h3>2. Add your video</h3>
+<div id="drop" tabindex="0" role="button">Drop a video file here or click to choose</div><input id="file" type="file" accept="video/*,audio/*" hidden>
+<p class="or">or paste a direct link to a video file</p>
+<input id="url" type="url" placeholder="https://example.com/video.mp4">
+<p class="note">YouTube and TikTok page links can’t be read by a browser. Download the video first, then add the file.</p>
+<div class="row"><div><label for="len">Clip length</label><select id="len"><option value="30">About 30s</option><option value="45" selected>About 45s</option><option value="60">About 60s</option></select></div>
+<div><label for="cnt">Clips</label><select id="cnt"><option>3</option><option selected>4</option><option>6</option></select></div>
+<div><label for="lay">Layout</label><select id="lay"><option value="fill">Fill frame (center crop)</option><option value="fit">Fit with blurred background</option></select></div></div>
+<div class="row"><button class="btn" id="go">Create clips</button></div><div class="err" id="err" role="alert"></div>
+<div id="bar"><i></i></div><ol id="log"></ol></div>
+
+<div id="clips"></div>
+<footer>Each clip downloads as MP4 with an SRT caption file. Long videos take a few minutes because cutting happens on your device.</footer>
+</div>
+<script type="module" src="app.js"></script>
+</body></html>
